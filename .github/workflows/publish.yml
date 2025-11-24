@@ -25,6 +25,9 @@ jobs:
           npm install
           npm run build
           
+      - name: Bump version
+        run: npm version patch --no-git-tag-version
+
       - name: Publish Interface
         run: npm publish --access public
         env:
