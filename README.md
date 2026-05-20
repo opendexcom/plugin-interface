@@ -151,11 +151,26 @@ Package is published as **`@opendexcom/plugin-interface`** on [registry.npmjs.or
 
 ### Publish locally
 
+**Option A — npm login**
+
 ```bash
-npm login   # or: npm login --scope=@opendexcom
-pnpm run build
+npm login
+npm whoami   # must be a maintainer (see npm owner ls @opendexcom/plugin-interface)
 npm publish --access public
 ```
+
+**Option B — access token (`NPM_TOKEN`)**
+
+`export NPM_TOKEN=...` alone does **not** authenticate npm. The repo `.npmrc` maps the env var to the registry:
+
+```bash
+export NPM_TOKEN=npm_xxxxxxxx   # Automation or Granular token with publish rights
+npm whoami                      # must succeed before publish
+cd plugin-interface
+npm publish --access public
+```
+
+If `npm whoami` works but publish still returns **404**, your token’s user is not a maintainer on `@opendexcom/plugin-interface` (add via `npm owner add` from the `dexrafi` account).
 
 Bump `version` in `package.json` before each release (CI also requires a version bump on every merge to `main`).
 
