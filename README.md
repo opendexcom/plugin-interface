@@ -48,8 +48,27 @@ The core interface that all plugins must implement.
 | `version` | `string` | Semantic version of the plugin |
 | `description` | `string` | (Optional) Brief description |
 | `register()` | `() => DynamicModule \| Promise<DynamicModule>` | Returns the NestJS module to be imported |
+| `contribute()` | `(registry: PluginContributionRegistry) => void \| Promise<void>` | (Optional) Register cross-cutting hooks during plugin load |
 | `onApplicationBootstrap` | `(app: INestApplication) => Promise<void>` | (Optional) Lifecycle hook called after app bootstrap |
 | `onApplicationShutdown` | `() => Promise<void>` | (Optional) Lifecycle hook called on shutdown |
+
+### Registration extensions
+
+Plugins can validate or augment user registration via `RegistrationExtension`:
+
+```typescript
+import {
+  RegistrationExtension,
+  PLUGIN_CONTRIBUTION_REGISTRY,
+  PluginContributionRegistry,
+} from '@opendexcom/plugin-interface';
+
+// During onApplicationBootstrap (when Nest DI is available):
+const registry = app.get<PluginContributionRegistry>(PLUGIN_CONTRIBUTION_REGISTRY);
+registry.addRegistrationExtension(myExtension);
+```
+
+The OSS host runs all extensions in `AuthService.register()` before and after user creation.
 
 ### `PluginConfig`
 

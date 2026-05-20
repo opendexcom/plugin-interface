@@ -1,4 +1,11 @@
-import { DynamicModule, INestApplication } from '@nestjs/common';
+import { DynamicModule, INestApplication, Type } from '@nestjs/common';
+import type { PluginContributionRegistry } from './plugin-contributions';
+
+/** Nest modules the host exposes to plugins (decoupled from plugin package imports). */
+export interface PluginHostModules {
+    /** AI services without HTTP controllers (AiService, GuardianService). */
+    aiCore?: Type<unknown>;
+}
 
 /**
  * Context passed by the host to every plugin at register() time.
@@ -12,6 +19,8 @@ export interface PluginContext {
         getOrThrow<S = unknown>(name: string): S;
         has(name: string): boolean;
     };
+    /** Optional host Nest modules plugins may import (e.g. AiCoreModule). */
+    hostModules?: PluginHostModules;
 }
 
 /**
@@ -35,6 +44,12 @@ export interface FormulAIPlugin {
      *                  that all plugins and core share the same Map instance.
      */
     register(context?: PluginContext): DynamicModule | Promise<DynamicModule>;
+
+    /**
+     * Optional: register cross-cutting hooks (e.g. registration validation).
+     * Called after register() during plugin load.
+     */
+    contribute?(contributions: PluginContributionRegistry): void | Promise<void>;
 
     /**
      * Optional: Initialize plugin after app bootstrap
@@ -72,3 +87,14 @@ export type {
     RegisteredSchema,
     SchemaDefinition,
 } from './schema-registry';
+
+export type {
+    RegisteredUserRef,
+    RegistrationExtension,
+    PluginContributionRegistry,
+} from './plugin-contributions';
+
+export {
+    DefaultPluginContributionRegistry,
+    PLUGIN_CONTRIBUTION_REGISTRY,
+} from './plugin-contributions';
