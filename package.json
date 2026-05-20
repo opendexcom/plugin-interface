@@ -8,12 +8,10 @@
         "dist"
     ],
     "publishConfig": {
-        "access": "public",
-        "registry": "https://registry.npmjs.org/"
+        "access": "public"
     },
     "scripts": {
-        "build": "tsc",
-        "prepublishOnly": "npm run build"
+        "build": "tsc"
     },
     "license": "MIT",
     "author": "OpenDexcom",
